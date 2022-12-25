@@ -21,16 +21,23 @@ export const getCustomerEmail = `${host}/accountingentry/getEmail`
 export const DailyReportRoute = `${host}/report/dailyreport`
 export const monthlyReportRoute = `${host}/report/monthlyreport`
 export const individualReportRoute = `${host}/report/individualreport`
+export const BankingReportRoute = `${host}/report/bankingReport`
 
 // authentication routes
 export const LoginRoute = `${host}/auth/login`
 export const Signup = `${host}/auth/register`
 export const verifyToken = `${host}/auth/verifyToken`
 
-// Dashboard routes
+// Banking Entry routes
+export const BankingEntryRoute = `${host}/bankingEntry/`
 
+// Dashboard routes
 // First Row
 export const TotalCreditAmount = `${host}/dashboard/credit`
 export const TotalDebitAmount = `${host}/dashboard/debit`
 export const TotalExcessAmount = `${host}/dashboard/ExcessAmount`
 export const TotalShortAmount = `${host}/dashboard/shortamount`
+
+// Second Row
+export const complianceAmount = `${host}/dashboard/compliance`
+export const otherDebitAmount = `${host}/dashboard/otherDebit`

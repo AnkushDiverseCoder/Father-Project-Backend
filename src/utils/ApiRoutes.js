@@ -10,6 +10,9 @@ export const getCustomerName = `${host}/customerhead`
 
 // Employee Entry Route
 export const CreateEmployeeEnrollment = `${host}/EmployeeEnrollment`
+export const IndividualReport = `${host}/EmployeeEnrollment/individualReport`
+export const HistoricalEmployeeReport = `${host}/EmployeeEnrollment/historicalReport`
+export const removeEntry = `${host}/EmployeeEnrollment`
 
 // customer Edit 
 export const CustomerHeadData = `${host}/customerhead`

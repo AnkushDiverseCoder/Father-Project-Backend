@@ -9,8 +9,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { Box } from "@mui/system";
+import moment from "moment";
 import {
-    CreateEmployeeEnrollment,
+  CreateEmployeeEnrollment,
   getCustomerName,
   verifyToken,
 } from "../utils/ApiRoutes";
@@ -27,7 +28,7 @@ const CustomerHead = () => {
   }, []);
   const [customerData, setCustomerData] = useState({
     joiningDate: "",
-    enrollmentDate: "",
+    enrollmentDate: moment().format('YYYY-MM-DD'),
     EmployeeName: "",
     fatherName: "",
     esicIpNumber: "",
@@ -69,7 +70,8 @@ const CustomerHead = () => {
   };
 
   const handleValidation = () => {
-    const { joiningDate, enrollmentDate,EmployeeName,fatherName,remarks } = customerData;
+    const { joiningDate, enrollmentDate, EmployeeName, fatherName, remarks } =
+      customerData;
     if (joiningDate === "") {
       toast.error("Customer Name is required", toastOptions);
     } else if (enrollmentDate === "") {
@@ -101,7 +103,7 @@ const CustomerHead = () => {
         remarks,
       } = customerData;
       const { data } = await axios.post(CreateEmployeeEnrollment, {
-        customerName : name,
+        customerName: name,
         EmployeeName,
         enrollmentDate,
         esicIpNumber,
@@ -116,7 +118,7 @@ const CustomerHead = () => {
       }
       if (data.status === true) {
         toast.success(data.msg, toastOptions);
-        setName("")
+        setName("");
         setCustomerData({
           ...customerData,
           EmployeeName: "",
@@ -131,8 +133,11 @@ const CustomerHead = () => {
     }
   };
 
-  const navigateToCustomerHeadReport = () => {
-    navigate("/dashboard/customerHeadReport");
+  const individualReport = () => {
+    navigate("/dashboard/EmployeeIndividualReport");
+  };
+  const historicalReport = () => {
+    navigate("/dashboard/EmployeeHistoricalReport");
   };
 
   return (
@@ -197,45 +202,10 @@ const CustomerHead = () => {
             {/* Second Box */}
             <div className="flex gap-6 justify-between ">
               <div className="flex items-center border-2 py-2 px-3 rounded-2xl mb-4 w-full">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="h-5 w-5 text-gray-400"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z"
-                  />
-                </svg>
-                <input
-                  className="pl-2 outline-none border-none bg-transparent w-full text-w-full"
-                  type="date"
-                  name="joiningDate"
-                  onChange={handleChange}
-                  value={customerData.joiningDate}
-                  autoComplete="off"
-                  placeholder="Joining Date"
-                />
-              </div>
-              <div className="flex items-center border-2 py-2 px-3 rounded-2xl mb-4 w-full">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="h-5 w-5 text-gray-400"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z"
-                  />
-                </svg>
+            
+                <div>
+                  <h1 className="mr-1 text-gray-400">DOE</h1>
+                </div>
                 <input
                   className="pl-2 outline-none border-none bg-transparent w-full text-w-full"
                   type="date"
@@ -244,6 +214,22 @@ const CustomerHead = () => {
                   value={customerData.enrollmentDate}
                   autoComplete="off"
                   placeholder="Enrollment Date"
+                />
+              </div>
+              <div className="flex items-center border-2 py-2 px-3 rounded-2xl mb-4 w-full">
+            
+                <div>
+                  <h1 className="mr-1 text-gray-400">DOJ</h1>
+                </div>
+            
+                <input
+                  className="pl-2 outline-none border-none bg-transparent w-full text-w-full"
+                  type="date"
+                  name="joiningDate"
+                  onChange={handleChange}
+                  value={customerData.joiningDate}
+                  autoComplete="off"
+                  placeholder="Joining Date"
                 />
               </div>
             </div>
@@ -324,7 +310,7 @@ const CustomerHead = () => {
                   value={customerData.esicIpNumber}
                   onChange={handleChange}
                   autoComplete="off"
-                  placeholder="EPF IP Number"
+                  placeholder="ESIC IP Number"
                 />
               </div>
               <div className="flex items-center border-2 py-2 px-3 rounded-2xl mb-4">
@@ -392,17 +378,17 @@ const CustomerHead = () => {
               Save The Employee Enrollment
             </button>
             <div className="flex gap-6">
-              <button
-                type="button"
-                onClick={navigateToCustomerHeadReport}
-                className="block w-full bg-[#fed7aa] mt-4 py-2 rounded-2xl text-[#ab4f2d] font-semibold mb-2"
-              >
-                Historical Report
-              </button>
+            <button
+                  type="submit"
+                  className="block w-full bg-[#fed7aa] mt-4 py-2 rounded-2xl text-[#ab4f2d] font-semibold mb-2"
+                  onClick={historicalReport}
+                  >
+                  Historical Report
+                </button>
 
               <button
                 type="button"
-                onClick={navigateToCustomerHeadReport}
+                onClick={individualReport}
                 className="block w-full bg-[#fed7aa] mt-4 py-2 rounded-2xl text-[#ab4f2d] font-semibold mb-2"
               >
                 Individual Report

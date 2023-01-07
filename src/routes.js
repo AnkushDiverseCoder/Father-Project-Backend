@@ -14,6 +14,8 @@ import HistoricalReport from './pages/HistoricalReport';
 import CustomerHeadReport from './pages/CustomerHeadReport';
 import BankingEntry from './pages/BankingEntry';
 import EmployeeEnrollment from './pages/EmployeeEnrollment';
+import IndividualEmployeeReport from './components/IndividualEmployeeReport';
+import HistoricalEmployeeReport from './components/HistoricalEmployeeReport';
 
 // ----------------------------------------------------------------------
 
@@ -33,6 +35,8 @@ export default function Router() {
         { path: 'CustomerHeadReport', element: <CustomerHeadReport/> },
         { path: 'BankingEntry', element: <BankingEntry/> },
         { path: 'EmployeeEnrollment', element: <EmployeeEnrollment/> },
+        { path: 'EmployeeIndividualReport', element: <IndividualEmployeeReport/> },
+        { path: 'EmployeeHistoricalReport', element: <HistoricalEmployeeReport/> },
       ],
     },
     {

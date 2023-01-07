@@ -13,6 +13,7 @@ import DailyReport from './pages/DailyReport';
 import HistoricalReport from './pages/HistoricalReport';
 import CustomerHeadReport from './pages/CustomerHeadReport';
 import BankingEntry from './pages/BankingEntry';
+import EmployeeEnrollment from './pages/EmployeeEnrollment';
 
 // ----------------------------------------------------------------------
 
@@ -31,6 +32,7 @@ export default function Router() {
         { path: 'historicalReport', element: <HistoricalReport /> },
         { path: 'CustomerHeadReport', element: <CustomerHeadReport/> },
         { path: 'BankingEntry', element: <BankingEntry/> },
+        { path: 'EmployeeEnrollment', element: <EmployeeEnrollment/> },
       ],
     },
     {

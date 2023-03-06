@@ -485,7 +485,6 @@ const Table = ({
         <DataTable
           columns={columns}
           data={filterData}
-          pagination
           fixedHeader
           fixedHeaderScrollHeight="400px"
           highlightOnHover

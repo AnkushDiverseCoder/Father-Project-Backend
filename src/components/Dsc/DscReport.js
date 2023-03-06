@@ -1,51 +1,57 @@
-/* eslint-disable react/prop-types */
-import { useNavigate } from "react-router-dom";
-import { Box } from "@mui/system";
-import { TextField } from "@mui/material";
-import { useEffect, useState } from "react";
-import DataTable from "react-data-table-component";
-import * as XLSX from "xlsx/xlsx.mjs";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
-import Moment from "moment";
-import excel from "./microsoft-excel-icon.png";
-import { verifyToken } from "../utils/ApiRoutes";
+import { ToastContainer, toast } from "react-toastify";
+import moment from "moment";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Box, TextField } from "@mui/material";
+import * as XLSX from "xlsx/xlsx.mjs";
+import DataTable from "react-data-table-component";
+import excel from "../microsoft-excel-icon.png";
+import { allDscDataRoute, dscDeleteRouteRoute, verifyToken } from "../../utils/ApiRoutes";
 
-// eslint-disable-next-line react/prop-types
-const EmployeeEnrollmentReport = ({
-  // eslint-disable-next-line react/prop-types
-  data,
-  // eslint-disable-next-line react/prop-types
-  filterData,
-  // eslint-disable-next-line react/prop-types
-  setFilterData,
-  // eslint-disable-next-line react/prop-types
-  name,
-  // eslint-disable-next-line react/prop-types
-  report,
-  // eslint-disable-next-line react/prop-types
-  endDate,
-}) => {
-  
+const DscReport = () => {
+  const navigate = useNavigate();
   const [search,setSearch] = useState("");
-  const [email, setEmail] = useState(false)
+  const [filterData, setFilterData] = useState([]);
+  const [data, setData] = useState([]);
 
-  const navigate = useNavigate()
+  // ALL Api Calls here --------------------------------
+  const handleDelete = async (id) => {
+    const { data } = await axios.delete(
+      `${dscDeleteRouteRoute}/${id}`
+    );
+    if (data.status === false) {
+      toast.error(data.msg, toastOptions);
+    }
+    if (data.status === true) {
+      toast.success(data.msg, toastOptions);
+    }
+  };
 
+  // ALL UseEffect Functions here --------------------------------
   useEffect(() => {
     const checkUser = async () => {
-      const token = localStorage.getItem("token")
-      const {data}  = await axios.post(verifyToken,{
-        token
+      const token = localStorage.getItem("token");
+      const { data } = await axios.post(verifyToken, {
+        token,
       });
-      
-      if (data.email === "bagathsingh59@gmail.com") {
-        setEmail(true);
-      }
-    }
-    checkUser()
 
+      if (data.status === "false") {
+        navigate("/login");
+      }
+    };
+    checkUser();
   }, [navigate]);
+
+  useEffect(() => {
+    const DscData = async () => {
+      const { data } = await axios.get(allDscDataRoute);
+      console.log(data.msg);
+      setFilterData(data.msg);
+      setData(data.msg);
+    };
+    DscData();
+  }, []);
 
   useEffect(() => {
     // eslint-disable-next-line react/prop-types, arrow-body-style
@@ -65,22 +71,7 @@ const EmployeeEnrollmentReport = ({
     theme: "dark",
   };
 
-  const handleDelete = async (id) => {
-    const { data } = await axios.delete(
-      `https://gorgeous-scrubs-crow.cyclic.app/api/EmployeeEnrollment/${id}`
-    );
-    // eslint-disable-next-line react/prop-types
-    if (data.status === false) {
-      // eslint-disable-next-line react/prop-types
-      toast.error(data.msg, toastOptions);
-    }
-    // eslint-disable-next-line react/prop-types
-    if (data.status === true) {
-      // eslint-disable-next-line react/prop-types
-      toast.success(data.msg, toastOptions);
-    }
-  };
-
+  // Table 
   const customStyles = {
     table: {
       style: {
@@ -176,9 +167,16 @@ const EmployeeEnrollmentReport = ({
 
   const columns = [
     {
-      name: <p className="whitespace-pre-line break-words mr-3">Joining Date</p>,
+      name: <p className="whitespace-pre-line break-words mr-3">Date Of Generation</p>,
       selector: (row) => (
-        <p>{Moment(row?.joiningDate).format("DD-MMM-yyy")}</p>
+        <p>{moment(row?.dateOfGeneration).format("DD-MMM-yyy")}</p>
+      ),
+      sortable: true,
+    },
+    {
+      name:  <p className="whitespace-pre-line break-words mr-3">Renewal Date</p>,
+      selector: (row) => (
+        <p>{moment(row?.renewalDate).format("DD-MMM-yyy")}</p>
       ),
       sortable: true,
     },
@@ -192,27 +190,30 @@ const EmployeeEnrollmentReport = ({
       sortable: true,
     },
     {
-      name:  <p className="whitespace-pre-line break-words mr-3">Employee Name</p>,
-      selector: (row) => (
-        <p className="">
-          {row?.EmployeeName}
-        </p>
+      name:  <p className="whitespace-pre-line break-words mr-3">Sale Amount</p>,
+      selector: (row) => row?.amount,
+      sortable: true,
+    },
+    {
+      name: "Received Amount",
+      selector: (row) => row?.receivedAmount,
+      sortable: true,
+    },
+    {
+      name: "Received Date",
+      selector: (row) =>(
+        <p>{moment(row?.receivedDate).format("DD-MMM-yyy")}</p>
       ),
       sortable: true,
     },
     {
-      name:  <p className="whitespace-pre-line break-words mr-3">father Name</p>,
-      selector: (row) => row?.fatherName,
+      name: "Closing Balance",
+      selector: (row) =>row?.closingBalance,
       sortable: true,
     },
     {
-      name: "UAN Number",
-      selector: (row) => row?.Uan,
-      sortable: true,
-    },
-    {
-      name: "ESIC IP Number",
-      selector: (row) => row?.esicIpNumber,
+      name: "Pan Number",
+      selector: (row) =>row?.panNumber,
       sortable: true,
     },
     {
@@ -222,7 +223,7 @@ const EmployeeEnrollmentReport = ({
       ),
       sortable: true,
     },
-    ...(email ? [{
+    {
       name: "Remove Entry",
       cell: (row) => (
         <button
@@ -233,20 +234,21 @@ const EmployeeEnrollmentReport = ({
           Remove
         </button>
       ),
-    }]:[])
+    }
   ];
 
   const downloadPdf = () => {
       const exportExcel = filterData.map((item, i) => ({
         SNo: i,
-        JoiningDate: Moment(item.joiningDate).format("DD-MM-yyy"),
-        enrollmentDate: Moment(item.enrollmentDate).format("DD-MM-yyy"),
         Customer_Name: item.customerName,
-        EmployeeName: item.EmployeeName,
-        fatherName: item.fatherName,
-        Uan: item.Uan.toLocaleString(),
-        esicIpNumber: item.esicIpNumber.toLocaleString(),
-        remarks: item.remarks,
+        Contact_number: item.contactNumber,
+        Date_Of_Generation: moment(item.dateOfGeneration).format("DD-MM-yyy"),
+        Valid_Till_Date: moment(item.validTillDate).format("DD-MM-yyy"),
+        Renewal_Date: moment(item.renewalDate).format("DD-MM-yyy"),
+        Sale_Amount: item.amount.toLocaleString(),
+        Received_Amount: item.receivedAmount.toLocaleString(),
+        Received_Date: moment(item.receivedDate).format("DD-MM-yyy"),
+        panNumber: item.panNumber.toLocaleString(),
       }));
       const workSheet = XLSX.utils.json_to_sheet(exportExcel);
       const workBook = XLSX.utils.book_new();
@@ -263,42 +265,11 @@ const EmployeeEnrollmentReport = ({
     }
 
   return (
+    <>
+      <div>
       <div className="rounded-lg pt-5 shadow-lg ">
-        <div className="flex justify-between p-3 bg-[#fff7cd] text-[#b78105]">
-          <h1 className="">
-            {report === "historicalReport" ? (
-              <>{`Cashflow Report During The Period From: \u00A0\u00A0`}</>
-            ) : (
-              <>Cashflow Report For : </>
-            )}
-            {report === "historicalReport" && (
-              <>
-                <span className="underline font-bold text-xl italic text-green-600">
-                  {" "}
-                  {` ${Moment(name)?.format("DD-MMMM-yyy")} \u00A0`}
-                </span>
-                <span className="underline font-bold text-xl italic text-blue-400">
-                  to{" "}
-                </span>
-                <span className="underline font-bold text-xl italic text-red-600">
-                  {" "}
-                  {` ${Moment(endDate)?.format("DD-MMMM-yyy")}`}
-                </span>
-              </>
-            )}
-            {report === "daily" && (
-              <span className="underline font-bold text-xl italic">
-                {" "}
-                {Moment(name)?.format("DD-MMMM-yyy")} (
-                {Moment(name)?.format("dddd")})
-              </span>
-            )}
-            {report === "individual" && (
-              <span className="underline font-bold text-xl italic">{name}</span>
-            )}
-            
-          </h1>
-          <h1 className="mr-auto ml-10 text-xl">Total Count : { Object.keys(data).length}</h1>
+        <div className="flex justify-end p-3 bg-[#fff7cd] text-[#b78105]">
+          
           <button
             type="button"
             className="p-1 rounded-lg text-white active:bg-green-600 active:scale-90 transition duration-150 ease-out w-10"
@@ -307,13 +278,15 @@ const EmployeeEnrollmentReport = ({
             <img src={excel} alt="" />
           </button>
         </div>
-        <DataTable
+      </div>
+      <DataTable
           columns={columns}
           data={filterData}
+          pagination
           fixedHeader
           fixedHeaderScrollHeight="400px"
           highlightOnHover
-          rows={[100000]}
+          paginationRowsPerPageOptions={[100000]}
           customStyles={customStyles}
           subHeaderAlign="left"
           subHeader
@@ -325,36 +298,32 @@ const EmployeeEnrollmentReport = ({
               }}
               noValidate
               autoComplete="off"
-              className="flex items-center"
             >
-
               <TextField
                 id="filled-basic"
                 label="Search AccountEntry "
                 variant="filled"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                />
-                <h1 className="mr-auto ml-10 text-blue-900 font-bold ">Total Count : { Object.keys(filterData).length}</h1>
+              />
             </Box>
           }
         />
-
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="dark"
-        />
       </div>
-
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
+    </>
   );
 };
 
-export default EmployeeEnrollmentReport;
+export default DscReport;
